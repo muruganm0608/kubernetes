@@ -17,18 +17,18 @@ yum install sshpass -y 2>/dev/null
 sudo useradd -p "8lupaTuWetZpk" user1 ## Hashed Passwd here is "redhat"
 echo "[Task- 3] : Enabling & Starting docker service"
 systemctl enable --now docker
-systemctl enable --now kubelet.service
 echo "[Task- 4] : Sleeping for 5sec"
 sleep 5
 echo "[Task- 5] : Installing kubelet & kubeadm"
 cgroups_driver=`docker info 2>/dev/null | grep -i cgroup | awk -F':' '{print $2}' | xargs`
-yum install kubeadm-1.21* kubectl-1.21* -y
+yum install kubeadm-1.22* kubectl-1.22* -y
 sed -i '/swap/d' /etc/fstab
 swapoff -a
 echo 1 > /proc/sys/net/bridge/bridge-nf-call-iptables
 setenforce 0
 iptables -F
 iptables-save
+systemctl enable --now kubelet.service
 echo "[Task- 6]: Adding cgroups_driver $cgroups_driver"
 sed -i 's/KUBELET_EXTRA_ARGS=.*/KUBELET_EXTRA_ARGS=--cgroup-driver='"$cgroups_driver"'/g' /etc/sysconfig/kubelet
 systemctl enable --now kubelet.service

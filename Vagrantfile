@@ -22,7 +22,7 @@ end
 
 NodeCount=1
 (1..NodeCount).each do |i|
-  config.vm.define "vagrant#{i}.prathiksha.com" do |node|
+  config.vm.define "worker#{i}.prathiksha.com" do |node|
   node.vm.box = "centos/7"
  # node.vm.synced_folder "/nfsshare", "/vagrant", type: "nfs"
   node.vm.provision :shell, path: "bootstrap.sh"
