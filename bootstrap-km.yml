@@ -1,0 +1,28 @@
+---
+- hosts: master
+  tasks:
+  - name: "[Task 1]  Pulling config images pull]"
+    shell: kubeadm config images pull 2>/dev/null
+    become: true
+
+  - name: "[TASK 2] Initialize Kubernetes Cluster"
+    shell: kubeadm init --apiserver-advertise-address=172.18.18.100 --pod-network-cidr=192.168.0.0/16
+    ignore_errors: yes
+    become: true
+
+  - name: "[TASK 3] Deploy Calico network"
+    shell: kubectl --kubeconfig=/etc/kubernetes/admin.conf create -f https://docs.projectcalico.org/v3.20/manifests/calico.yaml >/dev/null 2>&1
+    ignore_errors: yes
+    become: true
+
+  - name: "[TASK 4] Generate and save cluster join command to /joincluster.sh"
+    shell: kubeadm token create --print-join-command > /tmp/joincluster.sh
+    ignore_errors: yes
+    become: true
+
+  - name: "[Task 5] Setting up kubeconfig for vagrant user"
+    shell: mkdir -p /home/vagrant/.kube;cp /etc/kubernetes/admin.conf /home/vagrant/.kube/config;chown -R vagrant. /home/vagrant/.kube;cp /etc/kubernetes/admin.conf /tmp/;chmod 777 /tmp/admin.conf
+    ignore_errors: yes
+    become: true
+
+

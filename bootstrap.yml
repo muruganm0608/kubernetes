@@ -1,0 +1,84 @@
+--- 
+- hosts: all
+  tasks:
+  - name: Creating Kubernetes Repo 
+    blockinfile:
+      path: /etc/yum.repos.d/kubernetes.repo
+      create: yes
+      block: |
+       [kubernetes]
+       name=Kubernetes
+       baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
+       enabled=1
+       gpgcheck=1
+       repo_gpgcheck=1
+       gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+    become: true
+
+  - name: Updating YUM repository
+    yum:
+      name: '*'
+      state: latest
+    become: true
+  - name: Installing docker
+    yum:
+      name: 
+      - docker
+      - sshpass
+      state: present
+    become: true
+  - name: Adding user user1
+    shell: useradd -p "8lupaTuWetZpk" user1 ## Hashed Passwd here is "redhat"
+    ignore_errors: yes
+    become: true
+  - name: Enabling & Starting docker service
+    service:
+      name: docker
+      enabled: yes
+      state: started
+    become: true
+  - name: Install kubeadm & kubectl
+    yum:
+      name:
+      - net-tools
+      - kubeadm-1.22*
+      - kubectl-1.22*
+      state: present
+    become: true
+  - name: Disabling swap
+    shell: |
+     sed -i '/swap/d' /etc/fstab
+     swapoff -a 
+     echo 1 > /proc/sys/net/bridge/bridge-nf-call-iptables
+     setenforce 0
+     iptables -F
+     iptables-save
+    become: true
+  - name: Checking & modifying Cgroup setting
+    shell: |
+      cgroups_driver=`docker info 2>/dev/null | grep -i cgroup | awk -F':' '{print $2}' | xargs`
+      ipaddress=`ifconfig eth1 2>/dev/null | grep "inet " | awk '{print $2}' | xargs`
+      sed -i 's/KUBELET_EXTRA_ARGS=.*/KUBELET_EXTRA_ARGS=--cgroup-driver='"$cgroups_driver"' --node-ip='"$ipaddress"'/g' /etc/sysconfig/kubelet
+    become: true
+  - name: Startig kubelet service 
+    service:
+      name: kubelet
+      state: started
+      enabled: yes
+    become: true
+  - name: Enabling passwordauthentication
+    shell: sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/g' /etc/ssh/sshd_config
+    become: true
+  - name: Restarting sshd service
+    service: 
+      name: sshd
+      state: restarted
+    become: true
+
+
+  
+
+
+
+
+

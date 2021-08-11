@@ -12,12 +12,19 @@ km.vm.box = "centos/7"
 #km.vm.synced_folder "/nfsshare", "/vagrant", type: "nfs"
 km.vm.network "private_network", ip: "172.18.18.100"
 km.vm.hostname = "kubemaster.prathiksha.com"
-km.vm.provision :shell, path: "bootstrap.sh"
+km.vm.provision :ansible do|ansible|
+ ansible.playbook= "bootstrap.yml"
+ ansible.inventory_path= "./hosts"
+end
 km.vm.provider "virtualbox" do |v|
    v.memory = "2048"
    v.cpus = "2"
 end
-km.vm.provision :shell, path: "bootstrap-km.sh"
+km.vm.provision :ansible do|ansible|
+  ansible.playbook= "bootstrap-km.yml" 
+  ansible.inventory_path= "./hosts"
+ end
+ 
 end
 
 NodeCount=1
@@ -25,7 +32,6 @@ NodeCount=1
   config.vm.define "worker#{i}.prathiksha.com" do |node|
   node.vm.box = "centos/7"
  # node.vm.synced_folder "/nfsshare", "/vagrant", type: "nfs"
-  node.vm.provision :shell, path: "bootstrap.sh"
   node.vm.hostname = "worker#{i}.prathiksha.com"
   node.vm.network "private_network", ip: "172.18.18.10#{i}"
   node.vm.disk :disk, size: "5GB", primary: true
@@ -33,7 +39,15 @@ NodeCount=1
    v.memory = "2048"
    v.cpus = "2"
   end
-  node.vm.provision :shell, path: "bootstrap-worker.sh"
+  node.vm.provision :ansible do|ansible|
+    ansible.playbook= "bootstrap.yml" 
+    ansible.inventory_path= "./hosts"
+  end
+  
+  node.vm.provision :ansible do|ansible|
+    ansible.playbook= "bootstrap-worker.yml"
+    ansible.inventory_path= "./hosts"
+  end
 end
 end
 end

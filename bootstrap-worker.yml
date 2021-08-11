@@ -1,0 +1,11 @@
+---
+- hosts: worker
+  tasks:
+  - name: "[TASK - 1] Joining cluster"
+    shell: |
+     sshpass -p "redhat" scp -o StrictHostKeyChecking=no user1@172.18.18.100:/tmp/joincluster.sh /tmp 2>/dev/null
+     sh /tmp/joincluster.sh
+    ignore_errors: yes
+    become: true
+    
+  

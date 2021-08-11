@@ -20,6 +20,10 @@ spec:
       labels:
         {{- include "jboss-1.0.selectorLabels" . | nindent 8 }}
     spec:
+      volumes:
+      - name: task-pv-storage
+        persistentVolumeClaim:
+          claimName: hostpath
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
@@ -33,16 +37,19 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "jboss/wildfly"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          volumeMounts:
+          - mountPath: "/opt/jboss/wildfly"
+            name: task-pv-storage
           command: ["/opt/jboss/wildfly/bin/standalone.sh"]
           args: ["-b","0.0.0.0","-bmanagement","0.0.0.0"]
           lifecycle:
             postStart:
               exec:
                 command: ["/opt/jboss/wildfly/bin/add-user.sh","admin","Admin123","--silent"]
-          ports:
-            - name: http
-              containerPort: 8080
-              protocol: TCP
           livenessProbe:
             httpGet:
               path: /
