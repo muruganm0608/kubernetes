@@ -44,7 +44,7 @@ spec:
           volumeMounts:
           - mountPath: "/opt/jboss/wildfly"
             name: task-pv-storage
-          command: ["/opt/jboss/wildfly/bin/standalone.sh"]
+          command: ["ls -l ;/opt/jboss/wildfly/bin/standalone.sh"]
           args: ["-b","0.0.0.0","-bmanagement","0.0.0.0"]
           lifecycle:
             postStart:

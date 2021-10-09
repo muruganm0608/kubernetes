@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: wildfly
+  name: wildfly
+spec:
+  replicas: {{.Values.replicaCount}}
+  selector:
+    matchLabels:
+      app: wildfly
+  strategy: {}
+  template:
+    metadata:
+      labels: 
+        app: wildfly
+    spec:
+      containers:
+      - image: docker.io/jboss/wildfly
+        name: wildfly
+        ports:
+          - name: http-port
+            containerPort: 8080
+        volumeMounts:
+          - name: wildfly-vol
+            mountPath: /opt/jboss/wildfly/standalone/deployments
+        command: ["/opt/jboss/wildfly/bin/standalone.sh"]
+        args: ["-b","0.0.0.0","-bmanagement","0.0.0.0"] 
+        lifecycle:
+            postStart:
+              exec:
+                command: ["/opt/jboss/wildfly/bin/add-user.sh","admin","Admin123","--silent"]
+      volumes:
+      - name: wildfly-vol
+        persistentVolumeClaim:
+          claimName: hostpath 
+        
