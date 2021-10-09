@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: jend
+  name: jend
+spec:
+  replicas: {{.Values.replicaCount}}
+  selector:
+    matchLabels:
+      app: jend
+  strategy: {}
+  template:
+    metadata:
+      labels: 
+        app: jend
+    spec:
+      containers:
+      - image: jenkins/jenkins:lts
+        name: jenkins
+        ports:
+          - name: http-port
+            containerPort: 8080
+          - name: jnlp-port
+            containerPort: 31000
+        volumeMounts:
+          - name: jenkins-vol
+            mountPath: /var/jenkins_home
+      volumes:
+      - name: jenkins-vol
+        nfs:
+          server: 192.168.122.1
+          path: /nfsshare
