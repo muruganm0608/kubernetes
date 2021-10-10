@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: artemis
+  name: artemis
+spec:
+  replicas: {{.Values.replicaCount}}
+  selector:
+    matchLabels:
+      app: artemis
+  strategy: {}
+  template:
+    metadata:
+      labels: 
+        app: artemis
+    spec:
+      containers:
+      - image: muruganm0608/artemis-1.0
+        name: artemis
+        ports:
+          - name: http-port
+            containerPort: 8161
+        command: ["/opt/amq-broker-7.8.2/bin/0501/0501/bin/artemis","run"]
+        volumeMounts:
+          - name: artemis-vol
+            mountPath: /opt/amq-broker-7.8.2/bin/0501
+      volumes:
+      - name: artemis-vol
+        persistentVolumeClaim:
+          claimName: hostpath

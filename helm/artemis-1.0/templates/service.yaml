@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: artemis-svc
+spec:
+  ports:
+  - port: 8161
+    targetPort: 8161
+    nodePort: 30005
+  selector:
+    app: artemis
+  type: NodePort
+status:
+  loadBalancer: {}

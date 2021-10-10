@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: artemis-endpoint-svc
+spec:
+  ports:
+  - port: 61816
+    targetPort: 61816
+    nodePort: 30006
+  selector:
+    app: artemis
+  type: NodePort
+status:
+  loadBalancer: {}
