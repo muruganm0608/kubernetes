@@ -1,0 +1,13 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: guestbook
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/muruganm0608/kubernetes/tree/master/helm
+    chart: artemis-1.0
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: guestbook
