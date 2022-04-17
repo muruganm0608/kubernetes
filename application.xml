@@ -7,6 +7,7 @@ spec:
   project: default
   source:
     repoURL: https://github.com/muruganm0608/kubernetes/tree/master/helm
+    targetRevision: HEAD
     chart: artemis-1.0
   destination:
     server: https://kubernetes.default.svc
