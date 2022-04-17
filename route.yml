@@ -1,0 +1,11 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: wildfly-svc
+spec:
+  host: jbossurlforhttp.com
+  to:
+    kind: Service
+    name: wildfly-svc
+    weight: 100
+  wildcardPolicy: None

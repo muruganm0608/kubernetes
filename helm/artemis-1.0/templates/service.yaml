@@ -4,11 +4,8 @@ metadata:
   name: artemis-svc
 spec:
   ports:
-  - port: 8161
-    targetPort: 8161
-    nodePort: 30005
+  - port: 8191
+    targetPort: 8191
   selector:
     app: artemis
-  type: NodePort
-status:
-  loadBalancer: {}
+  type: LoadBalancer

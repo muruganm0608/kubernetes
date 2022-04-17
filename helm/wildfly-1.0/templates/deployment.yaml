@@ -1,15 +1,27 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: hostpath
+spec:
+  storageClassName: nfs-storageclass
+  accessModes:
+  - ReadWriteMany
+  resources:
+    requests:
+      storage: 500m
+---
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   labels:
     app: wildfly
   name: wildfly
 spec:
   replicas: {{.Values.replicaCount}}
+  serviceName: wildfly-svc
   selector:
     matchLabels:
       app: wildfly
-  strategy: {}
   template:
     metadata:
       labels: 
@@ -33,5 +45,6 @@ spec:
       volumes:
       - name: wildfly-vol
         persistentVolumeClaim:
-          claimName: hostpath 
+          claimName: hostpath1
         
+

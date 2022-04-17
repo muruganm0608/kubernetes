@@ -16,16 +16,20 @@ spec:
         app: artemis
     spec:
       containers:
-      - image: muruganm0608/artemis-1.0
+      - image: muruganm0608/artemis-1.2
         name: artemis
         ports:
           - name: http-port
             containerPort: 8161
-        command: ["/opt/amq-broker-7.8.2/bin/0501/0501/bin/artemis","run"]
+        command: ["/opt/amq-broker-7.8.2/bin/0501/bin/artemis","run"]
         volumeMounts:
           - name: artemis-vol
-            mountPath: /opt/amq-broker-7.8.2/bin/0501
+            mountPath: /opt/amq-broker-7.8.2/bin/0501/log
+        volumeMounts:
+          - name: broker-configuration
+            mountPath: /opt/amq-broker-7.8.2/bin/0501/etc/bootstrap.xml
+            subPath: bootstrap.xml
       volumes:
-      - name: artemis-vol
+      - name: broker-configuration
         persistentVolumeClaim:
-          claimName: hostpath
+          claimName: hostpath1

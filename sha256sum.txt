@@ -1,0 +1,3 @@
+e9044ff0888020b8acbb659d056a260d7042ec5a64f4305e9e316873ba992dce  openshift-client-linux-4.5.0-0.okd-2020-07-14-153706-ga.tar.gz
+c0cf08e406fae4f733e68f0c0a43f91a69dae3234acc40524934d89799101e35  openshift-install-linux-4.5.0-0.okd-2020-07-14-153706-ga.tar.gz
+8c6e2defd3fc84aa36acd348107e2010166ff58f7f485cb28ac83b6fe7d4fff1  release.txt

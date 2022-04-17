@@ -1,0 +1,1 @@
+oc --config=../openshift.local.clusterup/openshift-controller-manager/admin.kubeconfig adm policy --as system:admin add-cluster-role-to-user cluster-admin admin

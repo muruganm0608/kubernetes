@@ -2,16 +2,13 @@ apiVersion: v1
 kind: PersistentVolume
 metadata:
   name: pv-storage
-  labels:
-    type: local
 spec:
   capacity:
-    storage: 1Gi
-  volumeMode: Filesystem
+    storage: 3Gi
   accessModes:
    - ReadWriteMany
   persistentVolumeReclaimPolicy: Recycle
-  storageClassName: nfs
+  storageClassName: nfs-storageclass
   nfs: 
-    path: /nfsshare
+    path: /nfsshare/
     server: 192.168.122.1

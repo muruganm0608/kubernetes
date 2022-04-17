@@ -15,22 +15,55 @@
        gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
     become: true
 
-  - name: Updating YUM repository
-    yum:
-      name: '*'
-      state: latest
+  - name: Modifying centos 8 repository configuration
+    shell: cd /etc/yum.repos.d/;sed -i 's/mirrorlist/#mirrorlist/g' /etc/yum.repos.d/CentOS-*;sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' /etc/yum.repos.d/CentOS-*
+    ignore_errors: yes
     become: true
+
+#  - name: Updating YUM repository
+#    yum:
+#      name: '*'
+#      state: latest
+#    become: true
+
+  - name: Installing EPEL
+    yum:
+      name: epel-release
+    become: true
+
+  - name: Uninstalling podman
+    yum:
+      name: podman
+      state: absent
+    become: true
+
+  - name: Adding docker-ce repository
+    blockinfile:
+      path: /etc/yum.repos.d/docker-ce.repo
+      create: yes
+      block: |
+        [docker-ce-stable]
+        name=Docker CE Stable - $basearch
+        baseurl=https://download.docker.com/linux/centos/$releasever/$basearch/stable
+        enabled=1
+        gpgcheck=1
+        gpgkey=https://download.docker.com/linux/centos/gpg
+    become: true
+
   - name: Installing docker
     yum:
       name: 
-      - docker
+      - docker-ce
+      - iproute-tc
       - sshpass
       state: present
     become: true
+
   - name: Adding user user1
     shell: useradd -p "8lupaTuWetZpk" user1 ## Hashed Passwd here is "redhat"
     ignore_errors: yes
     become: true
+
   - name: Enabling & Starting docker service
     service:
       name: docker
@@ -41,8 +74,8 @@
     yum:
       name:
       - net-tools
-      - kubeadm-1.22*
-      - kubectl-1.22*
+      - kubeadm-1.23*
+      - kubectl-1.23*
       state: present
     become: true
   - name: Disabling swap
@@ -56,7 +89,7 @@
     become: true
   - name: Checking & modifying Cgroup setting
     shell: |
-      cgroups_driver=`docker info 2>/dev/null | grep -i cgroup | awk -F':' '{print $2}' | xargs`
+      cgroups_driver=`docker info 2>/dev/null | grep -i cgroup | awk -F':' '{print $2}' | xargs | awk '{print $1}'`
       ipaddress=`ifconfig eth1 2>/dev/null | grep "inet " | awk '{print $2}' | xargs`
       sed -i 's/KUBELET_EXTRA_ARGS=.*/KUBELET_EXTRA_ARGS=--cgroup-driver='"$cgroups_driver"' --node-ip='"$ipaddress"'/g' /etc/sysconfig/kubelet
     become: true

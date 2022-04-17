@@ -6,7 +6,7 @@ spec:
   ports:
   - port: 61816
     targetPort: 61816
-    nodePort: 30006
+    nodePort: 30009
   selector:
     app: artemis
   type: NodePort

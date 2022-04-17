@@ -1,12 +1,11 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: hostpath
-  namespace: jboss
+  name: hostpath1
 spec:
-  storageClassName: nfs
+  storageClassName: nfs-storageclass
   accessModes:
-  - ReadWriteOnce
+  - ReadWriteMany
   resources:
     requests:
       storage: 500m
