@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: https://github.com/muruganm0608/kubernetes/tree/master/helm
     targetRevision: HEAD
-    chart: artemis-1.0
+    chart: artemis
   destination:
     server: https://kubernetes.default.svc
     namespace: guestbook
