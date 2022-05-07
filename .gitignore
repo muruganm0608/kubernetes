@@ -1,2 +1,2 @@
 vagrant_kubernetes/.vagrant/**
-kubernetes_setup/.vagrant/**
+vagrant_kubernetes/kubernetes_setup/.vagrant/**
