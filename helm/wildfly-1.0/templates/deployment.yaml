@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: hostpath
+  name: hostpath1
 spec:
   storageClassName: nfs-storageclass
   accessModes:
@@ -28,7 +28,7 @@ spec:
         app: wildfly
     spec:
       containers:
-      - image: docker.io/jboss/wildfly
+      - image: quay.io/wildfly/wildfly
         name: wildfly
         ports:
           - name: http-port
