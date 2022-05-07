@@ -1,0 +1,6 @@
+[master]
+kubemaster.prathiksha.com ansible_host=172.18.18.100
+
+[worker]
+worker1.prathiksha.com ansible_host=172.18.18.101
+worker2.prathiksha.com ansible_host=172.18.18.102
