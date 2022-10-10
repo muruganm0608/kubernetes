@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: telegrafconf-cm
+data:
+  telegraf.conf: |-
+    [[inputs.prometheus]]
+      urls = ["http://{{.Values.prometheusendpoint}}"]
+    [[outputs.influxdb]]
+      urls = ["http://192.168.122.1:8086"]

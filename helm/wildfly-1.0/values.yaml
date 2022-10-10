@@ -1,1 +1,3 @@
 replicaCount: 1
+adminPassword: vault:secret/data/demosecret/aws#AWS_SECRET_ACCESS_KEY
+prometheusendpoint: prometheus-endpoint:8081

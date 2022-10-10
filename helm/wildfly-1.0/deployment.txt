@@ -1,8 +1,7 @@
----
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: logging-pv
+  name: elytronstore-pv
 spec:
   capacity:
     storage: 3Gi
@@ -15,9 +14,17 @@ spec:
     server: 192.168.122.1
 ---
 apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: standaloneconf-configmap
+data:
+  standalone.conf: |-
+{{ .Files.Get "standalone.conf" | indent 4}}
+---
+apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: loggingproperties-pvc
+  name: elytronstore-pvc
 spec:
   storageClassName: nfs-storageclass
   accessModes:
@@ -27,26 +34,9 @@ spec:
       storage: 500m
 ---
 apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: standaloneconf-configmap
-data:
-  standalone.conf: |-
-{{ .Files.Get "standalone.conf" | indent 4}}
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: loggingproperties-configmap
-data:
-  mgmt-users.properties: |-
-{{ .Files.Get "mgmt-users.properties" | indent 4}}
----
-apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: hostpath1
-  namespace: default
 spec:
   storageClassName: nfs-storageclass
   accessModes:
@@ -82,13 +72,7 @@ spec:
         vault.security.banzaicloud.io/vault-path: "kubernetes" 
     spec:
       containers:
-      - image: telegraf:latest
-        name: telegraf-ins
-        volumeMounts:
-          - name: telegraf-conf
-            mountPath: /etc/telegraf/telegraf.conf
-            subPath: telegraf.conf
-      - image: muruganm0608/wildfly-jd8
+      - image: quay.io/wildfly/wildfly
         name: wildfly
         ports:
           - name: http-port
@@ -96,17 +80,17 @@ spec:
         volumeMounts:
           - name: wildfly-vol
             mountPath: /opt/jboss/wildfly/standalone/deployments
-          - name: standaloneconf-volume
-            mountPath: /opt/jboss/wildfly/bin/standalone.conf
-            subPath: standalone.conf
           - name: wildfly-standalone
             mountPath: /opt/jboss/wildfly/standalone/configuration/standalone.xml
             subPath: standalone.xml
-          - name: mgmtusers-volume
-            mountPath: /opt/jboss/wildfly/standalone/configuration/mgmt-users.properties
-            subPath: mgmt-users.properties
+          - name: elytron-store
+            mountPath: /opt/jboss/wildfly/standalone/configuration/mycredstore.keystore
+            subPath: mycredstore.keystore
+          - name: standaloneconf-volume
+            mountPath: /opt/jboss/wildfly/bin/standalone.conf
+            subPath: standalone.conf
         command: ["/bin/sh","-c"]
-        args: ["/opt/jboss/wildfly/bin/add-user.sh admin Admin123 --silent;/opt/jboss/wildfly/bin/standalone.sh -b 0.0.0.0 -bmanagement 0.0.0.0"]
+        args: ["/opt/jboss/wildfly/bin/add-user.sh -u admin -p redhat --silent && rm -f /vault/vault-env ; /opt/jboss/wildfly/bin/standalone.sh -b 0.0.0.0 -bmanagement 0.0.0.0"]
         env:
         - name: AWS_SECRET_ACCESS_KEY
           value: {{.Values.adminPassword}}
@@ -114,15 +98,12 @@ spec:
       - name: wildfly-vol
         persistentVolumeClaim:
           claimName: hostpath1
-      - name: telegraf-conf
-        configMap:
-          name: telegrafconf-cm
-      - name: standaloneconf-volume
-        configMap:
-          name: standaloneconf-configmap
       - name: wildfly-standalone
         configMap:
           name: standalonexml
-      - name: mgmtusers-volume
+      - name: elytron-store
+        persistentVolumeClaim:
+          claimName: elytronstore-pvc
+      - name: standaloneconf-volume
         configMap:
-          name: loggingproperties-configmap
+          name: standaloneconf-configmap
